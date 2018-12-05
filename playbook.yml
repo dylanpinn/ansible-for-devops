@@ -6,9 +6,7 @@
       homebrew_cask:
         name: vagrant
         state: present
-      become: true
     - name: virtualbox
       homebrew_cask:
         name: virtualbox
         state: present
-      become: true

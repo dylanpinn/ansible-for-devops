@@ -63,7 +63,7 @@
       apache2_module: name=rewrite state=present
       notify: restart apache
 
-    - name: Add Apache virtualhost for Drupal 8 development.
+    - name: Add Apache virtualhost for Drupal 8.
       template:
         src: "templates/drupal.test.conf.j2"
         dest: "/etc/apache2/sites-available/{{ domain }}.test.conf"
@@ -96,7 +96,7 @@
     - name: Remove the MySQL test database.
       mysql_db: db=test state=absent
 
-    - name: Create a database for Drupal.
+    - name: Create a MySQL database for Drupal.
       mysql_db: "db={{ domain }} state=present"
 
     - name: Create a MySQL user for Drupal.
@@ -142,7 +142,7 @@
         dest: /usr/local/bin/drush
         state: link
 
-    - name: Checkout Drupal Core to the Apache docroot.
+    - name: Check out Drupal Core to the Apache docroot.
       git:
         repo: https://git.drupal.org/project/drupal.git
         version: "{{ drupal_core_version }}"
@@ -160,7 +160,8 @@
         --account-name=admin
         --account-pass=admin
         --db-url=mysql://{{ domain }}:1234@localhost/{{ domain }}
-        --root={{ drupal_core_path }}/sites/default/settings.php
+        --root={{ drupal_core_path }}
+        creates={{ drupal_core_path }}/sites/default/settings.php
       notify: restart apache
 
     # SEE: https://drupal.org/node/2121849#comment-8413637
@@ -169,7 +170,7 @@
         path: "{{ drupal_core_path }}/sites/default/settings.php"
         mode: 0744
 
-    - name: Set permissions on files directory.
+    - name: Set permissions properly on files directory.
       file:
         path: "{{ drupal_core_path }}/sites/default/files"
         mode: 0777
